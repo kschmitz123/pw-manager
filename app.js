@@ -1,11 +1,7 @@
 const inquirer = require("inquirer");
+const fs = require("fs");
 
 console.log("PW-Manager");
-
-const masterpassword = "1234";
-const args = process.argv.slice(2);
-const method = args[0];
-const passwordname = args[1];
 
 const questions = [
   {
@@ -15,39 +11,41 @@ const questions = [
     mask: "*",
   },
 ];
+try {
+  const passwordSafe = JSON.parse(fs.readFileSync("./db.json", "utf-8"));
+  validateAccess(passwordSafe);
+} catch (err) {
+  console.error(err);
+}
 
-const nextQuestion = [
-  {
-    type: "input",
-    name: "whatsNext",
-    message: "What do you want to do? (set or get)",
-  },
-];
-
-// function setPassword() {}
-
-async function validateAccess() {
+async function validateAccess(passwordSafe) {
   const { master } = await inquirer.prompt(questions);
-  if (master === masterpassword) {
-    console.log("Password is correct");
-  } else {
+  if (master !== passwordSafe.masterpassword) {
     console.log("WRONG 🤯. Enter correct password or leave.");
-    validateAccess();
+    validateAccess(passwordSafe);
     return;
   }
-}
-validateAccess();
+  const args = process.argv.slice(2);
+  //   const method = args[0];
+  const passwordName = args[0];
 
-// const { whatsNext } = await inquirer.prompt(nextQuestion);
-//     if (whatsNext === `set ${passwordname}`) {
-//       console.log(`You want to set the password of ${passwordname}`);
-//     } else if (whatsNext === `get ${passwordname}`) {
-//       console.log(`You want to know the password of ${passwordname}`);
-//       if (passwordname === "wifi") {
+  const password = passwordSafe[passwordName];
+  if (password) {
+    console.log(`Password is ${password}`);
+  } else {
+    console.log("Unknown password");
+  }
+}
+
+//     if (method === `set ${passwordName}`) {
+//       console.log(`You want to set the password of ${passwordName}`);
+//     } else if (method === `get ${passwordName}`) {
+//       console.log(`You want to know the password of ${passwordName}`);
+//       if (passwordName === "wifi") {
 //         console.log("Password is 123");
 //       } else {
 //         console.log("Unknown password");
 //       }
 //     } else {
 //       console.log(`Define a method`);
-//     }
+//
