@@ -1,9 +1,10 @@
 const inquirer = require("inquirer");
 const fs = require("fs");
+const chalk = require("chalk");
 
 console.log("PW-Manager");
 
-const questions = [
+const masterQst = [
   {
     type: "password",
     name: "master",
@@ -11,6 +12,24 @@ const questions = [
     mask: "*",
   },
 ];
+
+const question = [
+  {
+    type: "input",
+    name: "password",
+    message: "Which passwort do you need?",
+  },
+];
+
+async function validateAccess(passwordSafe) {
+  const { master } = await inquirer.prompt(masterQst);
+  if (master !== passwordSafe.masterpassword) {
+    console.log(chalk.red("WRONG 🤯. Enter correct password or leave."));
+    validateAccess(passwordSafe);
+    return;
+  }
+  getPassword(passwordSafe);
+}
 try {
   const passwordSafe = JSON.parse(fs.readFileSync("./db.json", "utf-8"));
   validateAccess(passwordSafe);
@@ -18,25 +37,22 @@ try {
   console.error(err);
 }
 
-async function validateAccess(passwordSafe) {
-  const { master } = await inquirer.prompt(questions);
-  if (master !== passwordSafe.masterpassword) {
-    console.log("WRONG 🤯. Enter correct password or leave.");
-    validateAccess(passwordSafe);
-    return;
-  }
-  const args = process.argv.slice(2);
-  //   const method = args[0];
-  const passwordName = args[0];
+async function getPassword(passwordSafe) {
+  await inquirer.prompt(question).then((answers) => {
+    passwordName = answers["password"];
 
-  const password = passwordSafe[passwordName];
-  if (password) {
-    console.log(`Password is ${password}`);
-  } else {
-    console.log("Unknown password");
-  }
+    // const args = process.argv.slice(2);
+    // //   const method = args[0];
+    // const passwordName = args[0];
+
+    const password = passwordSafe[passwordName];
+    if (password) {
+      console.log(`Password is ${password}`);
+    } else {
+      console.log("Unknown password");
+    }
+  });
 }
-
 //     if (method === `set ${passwordName}`) {
 //       console.log(`You want to set the password of ${passwordName}`);
 //     } else if (method === `get ${passwordName}`) {
