@@ -13,7 +13,14 @@ const masterQst = [
   },
 ];
 
-const question = [
+const methodQst = [
+  {
+    type: "input",
+    name: "method",
+    message: "Do you want to set or get a password?",
+  },
+];
+const passwordQst = [
   {
     type: "input",
     name: "password",
@@ -21,30 +28,31 @@ const question = [
   },
 ];
 
-async function validateAccess(passwordSafe) {
+async function validateAccess() {
   const { master } = await inquirer.prompt(masterQst);
+  const passwordSafe = JSON.parse(fs.readFileSync("./db.json", "utf-8"));
   if (master !== passwordSafe.masterpassword) {
     console.log(chalk.red("WRONG 🤯. Enter correct password or leave."));
-    validateAccess(passwordSafe);
+    validateAccess();
     return;
   }
-  getPassword(passwordSafe);
+  getMethod(passwordSafe);
 }
-try {
-  const passwordSafe = JSON.parse(fs.readFileSync("./db.json", "utf-8"));
-  validateAccess(passwordSafe);
-} catch (err) {
-  console.error(err);
-}
+validateAccess();
 
+async function getMethod(passwordSafe) {
+  await inquirer.prompt(methodQst).then((answers) => {
+    method = answers["method"];
+    if (method === "get") {
+      getPassword(passwordSafe);
+    } else {
+      console.log("The password set function is not available yet");
+    }
+  });
+}
 async function getPassword(passwordSafe) {
-  await inquirer.prompt(question).then((answers) => {
+  await inquirer.prompt(passwordQst).then((answers) => {
     passwordName = answers["password"];
-
-    // const args = process.argv.slice(2);
-    // //   const method = args[0];
-    // const passwordName = args[0];
-
     const password = passwordSafe[passwordName];
     if (password) {
       console.log(`Password is ${password}`);
@@ -53,15 +61,7 @@ async function getPassword(passwordSafe) {
     }
   });
 }
-//     if (method === `set ${passwordName}`) {
-//       console.log(`You want to set the password of ${passwordName}`);
-//     } else if (method === `get ${passwordName}`) {
-//       console.log(`You want to know the password of ${passwordName}`);
-//       if (passwordName === "wifi") {
-//         console.log("Password is 123");
-//       } else {
-//         console.log("Unknown password");
-//       }
-//     } else {
-//       console.log(`Define a method`);
-//
+
+// const args = process.argv.slice(2);
+// //   const method = args[0];
+// const passwordName = args[0];
