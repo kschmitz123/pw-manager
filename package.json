@@ -1,0 +1,24 @@
+{
+  "name": "pw-manager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "private": true,
+  "dependencies": {
+    "inquirer": "^7.3.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kschmitz123/pw-manager.git"
+  },
+  "author": "Kathrin Schmitz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kschmitz123/pw-manager/issues"
+  },
+  "homepage": "https://github.com/kschmitz123/pw-manager#readme"
+}
