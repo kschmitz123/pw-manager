@@ -5,6 +5,8 @@
   "main": "app.js",
   "private": true,
   "dependencies": {
+    "chalk": "^4.1.0",
+    "crypto-js": "^4.0.0",
     "inquirer": "^7.3.3"
   },
   "devDependencies": {},

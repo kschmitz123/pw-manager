@@ -20,11 +20,25 @@ const methodQst = [
     message: "Do you want to set or get a password?",
   },
 ];
-const passwordQst = [
+const getPasswordQst = [
   {
     type: "input",
     name: "password",
     message: "Which passwort do you need?",
+  },
+];
+const setPasswordTitle = [
+  {
+    type: "input",
+    name: "passwordTitle",
+    message: "What's the password for?",
+  },
+];
+const setPasswordName = [
+  {
+    type: "input",
+    name: "passwordName",
+    message: "What should the password be?",
   },
 ];
 
@@ -46,12 +60,12 @@ async function getMethod(passwordSafe) {
     if (method === "get") {
       getPassword(passwordSafe);
     } else {
-      console.log("The password set function is not available yet");
+      setPassword(passwordSafe);
     }
   });
 }
 async function getPassword(passwordSafe) {
-  await inquirer.prompt(passwordQst).then((answers) => {
+  await inquirer.prompt(getPasswordQst).then((answers) => {
     passwordName = answers["password"];
     const password = passwordSafe[passwordName];
     if (password) {
@@ -65,3 +79,14 @@ async function getPassword(passwordSafe) {
 // const args = process.argv.slice(2);
 // //   const method = args[0];
 // const passwordName = args[0];
+async function setPassword(passwordSafe) {
+  const { passwordTitle } = await inquirer.prompt(setPasswordTitle);
+  const { passwordName } = await inquirer.prompt(setPasswordName);
+
+  const addedPassword = { [passwordTitle]: passwordName };
+
+  const newPassword = Object.assign(passwordSafe, addedPassword);
+  const data = JSON.stringify(newPassword, null, 2);
+
+  fs.writeFileSync("./db.json", data);
+}
